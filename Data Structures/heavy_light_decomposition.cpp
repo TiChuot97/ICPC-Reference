@@ -1,3 +1,5 @@
+//Tested with: http://www.spoj.com/problems/QTREE3/
+
 void build(int u) {
     size_tree[u] = 1;
     for (int i = 0; i < adj[u].size(); ++i) {
