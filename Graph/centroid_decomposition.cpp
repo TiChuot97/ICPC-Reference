@@ -50,20 +50,20 @@ void delete_adj(int u, int v) {
         }
 }
 
-void centroid_decomposition() {
-    int l = 1, r = 1; q[1] = 1;
-    while (l <= r) {
-        int u = q[l++]; ++flag;
-        int root = find_root(u);
+int centroid_decomposition(int u) {
+    int root = find_root(u);
 
-        assert(root != -1);
+    for (auto v : node_list)
+        dist[root][v] = d[v];
 
-        // Do stuffs here ...
+    // Do stuffs here...
 
-        for (int i = 0; i < adj[root].size(); ++i) {
-            int v = adj[root][i].first;
-            delete_adj(v, root);
-            q[++r] = v;
-        }
+    for (int i = 0; i < adj[root].size(); ++i) {
+        int v = adj[root][i].first;
+        delete_adj(v, root);
+        int child = centroid_decomposition(v);
+        centroid_parent[child] = root;
     }
+
+    return root;
 }
