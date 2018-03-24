@@ -32,7 +32,7 @@ struct SplayTree {
 
     void build_tree(vector < int >& arr) {
         root = nilt;
-        REPU(i, arr.size()) {
+        for (int i = 0; i < arr.size(); ++i) {
             Node* x = new Node();
             x->size = arr[i];
             x->value = arr[i];
