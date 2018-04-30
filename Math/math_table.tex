@@ -1,0 +1,61 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\begin{enumerate}
+
+\item Burnside Lemma + Polya enumeration theorem \\
+Counts the number of inequivalent colorings on n-set under a permutation group. 
+\begin{equation*}
+	N(C, G) = \frac{1}{|G|} \sum_{f \in G}{|C(f)|} = \frac{1}{|G|} \sum_{f \in G}{k^{\#(f)}} = \frac{1}{|G|} \sum_{f \in G}{k^{\sum{e_i}}}
+\end{equation*}
+$G$ is the equivalent permutation group \\
+$C$ is all colorings on n-set \\
+$N(C,G)$ is the count of inequivalent colorings \\
+$C(f)$ is the stable kernel of permutation f \\
+$k$ is the number of colors available \\
+$\#(f)$ is the number of cycles in permutation f \\
+$e_1 \hdots e_n$ is the type of permutation f - it has $e_i$ i-cycles \\
+
+\item Lucas theorem: $\binom{m}{n} \equiv \prod{\binom{m_i}{n_i}} \mod{p}$ \\
+where p is prime, $m_i$ is base-p digits of m
+
+\item Fermat's little theorem: $a^{p-1} \equiv 1 \mod{p}$ where p is prime \\
+Euler's theorem: $a^{\phi(n)} \equiv 1 \mod{n}$ where $gcd(a,n) = 1$
+
+\item Wolstenholme's theorem: $\binom{2p-1}{p-1} \equiv 1 \mod{p^3}$, $\binom{ap}{bp} \equiv \binom{a}{b} \mod{p^3}$ where p is prime
+
+\item primality criteria ($n$ is prime iff)
+\begin{align*}
+	\prod_{1 \le k \le n-1}{(2^k - 1)} &\equiv n \mod{(2^n - 1)} (Ventieghems) \\
+	(n-1)! &\equiv -1 \mod{n} (Wilson)
+\end{align*}
+
+\item Euler's totient function
+\begin{align*}
+	\phi(n) &= n \prod_{p \mid n, p \text{ prime }}{(1 - \frac{1}{p})} \\
+	\phi(mn) &= \phi(m) \phi(n) \text{ if } gcd(m, n) = 1 \\
+	\phi(mn) &= \phi(m) \phi(n) \frac{d}{\phi(d)} \text{ where } d = gcd(m, n) \\
+	\phi(lcm(m,n)) \phi(gcd(m,n)) &= \phi(m) \phi(n) \\
+	\sum_{d \mid n}{\phi(d)} &= n \\
+	\sum_{d \mid n}{\frac{n}{d} \phi(d)} &= \sum_{k=1..n}{gcd(k, n)} \\
+	\phi(n) d(n) &= \sum_{k=1..n}^{gcd(k,n)=1}{gcd(k-1, n)} \\
+	\frac{1}{2} n \phi(n) &= \sum_{k=1..n}^{gcd(k,n)=1}{k} \\
+	a \mid b &\rightarrow \phi(a) \mid \phi(b) \\
+	n &\mid \phi(a^n - 1) \text{ for } a,n > 1 \\
+\end{align*}
+
+\item Mobius function
+\begin{align*}
+	\phi(n) &= n \sum_{d \mid n}{\frac{\mu(d)}{d}} \\
+	\sum_{d \mid n}{\frac{\mu^2(d)}{\phi(d)}} &= \frac{n}{\phi(n)} \\
+\end{align*}
+
+\item Nim
+Lose iff XOR sum is zero
+
+\end{enumerate}
+
+\end{document}
