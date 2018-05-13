@@ -1,0 +1,116 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+
+$p$ is prime
+
+generating functions % CF 258E
+example problem: count solutions of $x_1 + \hdots + x_k = n$ with constraints on $x_i$. 
+
+construction: inductive construction
+
+\section{Number Theory}
+\begin{itemize}
+
+\item
+\begin{align*}
+	a^{p-1} &\equiv 1 \pmod{p} \\ % Fermat
+	a^{\phi(n)} &\equiv 1 \pmod{n} \text{ where } \gcd(a,n) = 1 \\ % Euler
+	a^m &\equiv a^{m \% \phi(n) + \phi(n)} \pmod{n}
+\end{align*}
+
+\item Euler's totient function
+\begin{align*}
+	\phi(n) &= n \prod_{p \mid n}{(1 - \frac{1}{p})} \\
+	\phi(mn) &= \phi(m) \phi(n) \text{ if } \gcd(m, n) = 1 \\
+	\phi(mn) &= \phi(m) \phi(n) \frac{d}{\phi(d)} \text{ where } d = \gcd(m, n) \\
+	\phi(lcm(m,n)) \phi(\gcd(m,n)) &= \phi(m) \phi(n) \\
+	\sum_{d \mid n}{\phi(d)} &= n \\
+	\sum_{d \mid n}{\frac{n}{d} \phi(d)} &= \sum_{k=1..n}{\gcd(k, n)} \\
+	\phi(n) d(n) &= \sum_{k=1..n}^{\gcd(k,n)=1}{\gcd(k-1, n)} \\
+	\frac{1}{2} n \phi(n) &= \sum_{k=1..n}^{\gcd(k,n)=1}{k} \\
+	a \mid b &\rightarrow \phi(a) \mid \phi(b) \\
+	n &\mid \phi(a^n - 1) \text{ for } a,n > 1 \\
+\end{align*}
+
+\item Mobius function
+\begin{align*}
+	\sum_{d \mid n}{\mu(d)} &= [n==1] \\
+	n \sum_{d \mid n}{\frac{\mu(d)}{d}} &= \phi(n) \\
+	\sum_{d \mid n}{\frac{\mu^2(d)}{\phi(d)}} &= \frac{n}{\phi(n)} \\
+	\forall n, g(n) = \sum_{d \mid n}{f(d)} &\rightarrow \forall n, f(n) = \sum_{d \mid n}{\mu(d) g(\frac{n}{d})} \\ % CF 439E
+\end{align*}
+
+\item primality criteria ($p$ is prime iff)
+\begin{align*}
+	\prod_{1 \le k \le p-1}{(2^k - 1)} &\equiv p \mod{(2^p - 1)} \\ % Ventieghems
+	(p-1)! &\equiv -1 \mod{p} \\ % Wilson
+\end{align*}
+
+\end{itemize}
+
+\section{Combinatorics}
+\begin{itemize}
+
+\item
+\begin{align*}
+	\binom{n}{0} + \hdots + \binom{n}{n} &= 2^n \\
+	\binom{n}{0} + \binom{n}{2} + \hdots &= 2^{n-1} \\
+	\binom{n}{1} + \binom{n}{3} + \hdots &= 2^{n-1} \\
+	0 \binom{n}{0} + \hdots + n \binom{n}{n} &= n 2^{n-1} \\
+	0^2 \binom{n}{0} + \hdots + n^2 \binom{n}{n} &= n (n+1) 2^{n-2} \\
+	n \binom{n-1}{k-1} &= k \binom{n}{k} \\
+	\binom{n-1}{k} + \binom{n-1}{k-1} &= \binom{n}{k} \\
+	\binom{k}{k} + \hdots + \binom{n}{k} &= \binom{n+1}{k+1} \\
+	\binom{m}{0} \binom{n}{k} + \hdots + \binom{m}{k} \binom{n}{0} &= \binom{m+n}{k} \\
+	\binom{n}{0}^2 + \hdots + \binom{n}{n}^2 &= \binom{2n}{n} \\
+	\binom{m}{n} &\equiv \prod{\binom{m_i}{n_i}} \pmod{p} \\ % Lucas
+	\binom{2p-1}{p-1} &\equiv 1 \pmod{p^3} \text{ where } p > 3 \\ % Wolstenholme
+	\binom{ap}{bp} &\equiv \binom{a}{b} \pmod{p^3} \text{ where } p > 3 \\ % Wolstenholme
+\end{align*}
+
+\item Derangement: $D_n = n D_{n-1} + (-1)^n$
+
+\item Index of $r$-subset $a_1 \hdots a_r$ in lex-order is
+\begin{align*}
+	\binom{n}{r} - \binom{n-a_1}{r} - \hdots - \binom{n-a_r}{1}
+\end{align*}
+
+\item Gray sequence: $G[i] = i \text{ xor } (i >> 1)$
+
+\item Burnside Lemma + Polya enumeration theorem \\
+Counts the number of inequivalent colorings on n-set under a permutation group. 
+\begin{equation*}
+	N(C, G) = \frac{1}{|G|} \sum_{f \in G}{|C(f)|} = \frac{1}{|G|} \sum_{f \in G}{k^{\#(f)}} = \frac{1}{|G|} \sum_{f \in G}{k^{\sum{e_i}}}
+\end{equation*}
+$G$ is the equivalent permutation group \\
+$C$ is all colorings on n-set \\
+$N(C,G)$ is the count of inequivalent colorings \\
+$C(f)$ is the stable kernel of permutation f \\
+$k$ is the number of colors available \\
+$\#(f)$ is the number of cycles in permutation f \\
+$e_1 \hdots e_n$ is the type of permutation f - it has $e_i$ i-cycles \\
+
+\end{itemize}
+
+\section{Graph theory}
+\begin{itemize}
+
+\item Havel-Hakimi algorithm: degree sequence $(d_1 \ge \hdots \ge d_n)$ is simple-graphic iff $(d_2-1 \hdots d_{d_1+1}-1, d_{d_1+2} \hdots d_n)$ is simple-graphic. Equivalently, connect largest-degree node with other largest-degree nodes. \\
+Erdos-Gallai theorem: $(d_1 \ge \hdots \ge d_n)$ is simple-graphic iff
+\begin{align*}
+	\forall k \in [1,n] \sum_{i=1}^{k}{d_i} \le k(k-1) + \sum_{i=k+1}^{n}{\min{(d_i, k)}}
+\end{align*}
+
+\end{itemize}
+
+\section{Game theory}
+\begin{itemize}
+
+\item Nim: Lose iff XOR sum is zero
+
+\end{itemize}
+
+\end{document}
