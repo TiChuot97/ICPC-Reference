@@ -1,11 +1,12 @@
 // Tested with https://dmoj.ca/problem/apio10p1
+// Finding max.
 
 typedef long long htype;
 typedef pair < htype, htype > line;
 vector < line > lst;
 
 bool is_bad(line l1, line l2, line l3) {
-    return (l1.second - l2.second) * (l3.first - l2.first) >= (l2.second - l3.second) * (l2.first - l1.first);
+    return (1.0 * (l1.second - l2.second)) / (l2.first - l1.first) >= (1.0 * (l2.second - l3.second)) / (l3.first - l2.first);
 }
 
 // Assuming lines' slopes m are strictly increasing.
@@ -27,3 +28,4 @@ htype get(htype x) {
         ++pointer;
     return get_value(lst[pointer], x);
 }
+
