@@ -1,69 +1,23 @@
-// Tested with: http://poj.org/problem?id=1741
+// Tested with: https://codeforces.com/problemset/problem/321/C
 
-void build_tree(int u, vector < int > &node) {
-    node.push_back(u);
-    child[u] = 1;
-    for (int i = 0; i < adj[u].size(); ++i) {
-        int v = adj[u][i].first;
-        int w = adj[u][i].second;
-        if (v == parent[u]) continue;
-        parent[v] = u;
-        d[v] = d[u] + w;
-        build_tree(v, node);
-        child[u] += child[v];
-    }
+void build(int u, int p) {
+    sze[u] = 1;
+    for (int v : adj[u])
+        if (!elim[v] && v != p) build(v, u), sze[u] += sze[v];
 }
 
-void build(int root) {
-    node_list.clear();
-    parent[root] = 0;
-    d[root] = 0;
-    build_tree(root, node_list);
+int get_centroid(int u, int p, int num) {
+    for (int v : adj[u])
+        if (!elim[v] && v != p && sze[v] > num / 2)
+            return get_centroid(v, u, num);
+    return u;
 }
 
-bool is_root(int u, int s) {
-    for (int i = 0; i < adj[u].size(); ++i) {
-        int v = adj[u][i].first;
-        if (parent[u] == v) continue;
-        if (child[v] > (s / 2)) return false;
-    }
-    return ((s - child[u]) <= (s / 2));
-}
-
-int find_root(int u) {
-    build(u);
-    for (int i = 0; i < node_list.size(); ++i)
-        if (is_root(node_list[i], node_list.size())) {
-            int root = node_list[i];
-            build(root);
-            return root;
-        }
-    return -1;
-}
-
-void delete_adj(int u, int v) {
-    for (int i = 0; i < adj[u].size(); ++i)
-        if (adj[u][i].first == v) {
-            swap(adj[u][i], adj[u][adj[u].size() - 1]);
-            adj[u].pop_back();
-            break;
-        }
-}
-
-int centroid_decomposition(int u) {
-    int root = find_root(u);
-
-    for (auto v : node_list)
-        dist[root][v] = d[v];
-
-    // Do stuffs here...
-
-    for (int i = 0; i < adj[root].size(); ++i) {
-        int v = adj[root][i].first;
-        delete_adj(v, root);
-        int child = centroid_decomposition(v);
-        centroid_parent[child] = root;
-    }
-
-    return root;
+void centroid_decomposition(int u) {
+    build(u, -1);
+    int root = get_centroid(u, -1, sze[u]);
+    // Do stuffs here
+    elim[root] = true;
+    for (int v : adj[root])
+        if (!elim[v]) centroid_decomposition(v, c + 1);
 }
