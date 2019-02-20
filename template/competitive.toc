@@ -1,0 +1,28 @@
+\contentsline {section}{\numberline {1}Data Structures}{2}
+\contentsline {subsection}{\numberline {1.1}Binary Indexed Tree 2D}{2}
+\contentsline {subsection}{\numberline {1.2}Segment Tree 2D}{2}
+\contentsline {subsection}{\numberline {1.3}Persistent Segment Tree}{3}
+\contentsline {subsection}{\numberline {1.4}Splay Tree}{3}
+\contentsline {subsection}{\numberline {1.5}Mo's Algorithm}{5}
+\contentsline {section}{\numberline {2}Graph Theory}{5}
+\contentsline {subsection}{\numberline {2.1}Ford Fulkerson}{5}
+\contentsline {subsection}{\numberline {2.2}Tarjan}{6}
+\contentsline {subsection}{\numberline {2.3}Topo Sort}{6}
+\contentsline {subsection}{\numberline {2.4}2-SAT}{6}
+\contentsline {subsection}{\numberline {2.5}Lowest Common Ancestor - $O(n\mathop {\mathgroup \symoperators log}\nolimits n)$}{7}
+\contentsline {subsection}{\numberline {2.6}Centroid Decomposition}{7}
+\contentsline {subsection}{\numberline {2.7}Heavy Light Decomposition}{7}
+\contentsline {section}{\numberline {3}Dynamic Programming}{8}
+\contentsline {subsection}{\numberline {3.1}Convex Hull Trick}{8}
+\contentsline {subsection}{\numberline {3.2}Dynamic Convex Hull Trick}{9}
+\contentsline {section}{\numberline {4}String}{9}
+\contentsline {subsection}{\numberline {4.1}Suffix Array}{9}
+\contentsline {subsection}{\numberline {4.2}Longest Common Prefix}{10}
+\contentsline {subsection}{\numberline {4.3}Aho-Corasick Automata}{10}
+\contentsline {subsection}{\numberline {4.4}Palindromic Tree}{11}
+\contentsline {section}{\numberline {5}Game Theory}{12}
+\contentsline {subsection}{\numberline {5.1}Nim Product}{12}
+\contentsline {section}{\numberline {6}Math}{12}
+\contentsline {subsection}{\numberline {6.1}Extended Euclidean Algorithm}{12}
+\contentsline {subsection}{\numberline {6.2}Fast Fourier Transform}{12}
+\contentsline {subsection}{\numberline {6.3}Gaussian Elimination}{13}
