@@ -1,20 +1,5 @@
 // Tested with: http://www.spoj.com/problems/TORNJEVI/
-// Note: for tarjan(), see tarjan.cpp
-
-void topo_sort() {
-    for (int i = 1; i <= num_comp; ++i)
-        if (deg[i] == 0) q.push(i);
-    int num = 0;
-    while (!q.empty()) {
-        int u = q.front(); q.pop();
-        for (int i = 0; i < new_adj[u].size(); ++i) {
-            int v = new_adj[u][i];
-            --deg[v];
-            if (deg[v] == 0) q.push(v);
-        }
-        position[u] = ++num;
-    }
-}
+// Note: for tarjan() and topo_sort(), see tarjan.cpp and topo_sort.cpp
 
 bool two_sat() {
     for (int i = 0; i < list_node.size(); ++i)
@@ -32,6 +17,7 @@ bool two_sat() {
     topo_sort();
     for (int i = 0; i < list_node.size(); ++i) {
         int u = list_node[i];
+        // position[u]: position of u after topo sorted
         if (position[comp[u]] > position[comp[neg[u]]])
             check[u] = 1; // Pick u (otherwise pick !u)
     }
