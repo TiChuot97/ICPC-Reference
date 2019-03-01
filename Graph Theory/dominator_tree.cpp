@@ -1,17 +1,9 @@
 // Tested with: https://codeforces.com/gym/100513/problem/L
+// For multitest, initialize label[], l[], r[] to 0 and
+// clear adj[], radj[], bucket[], child[].
 
 struct DominatorTree {
     DominatorTree() = default;
-
-    void init() {
-        for (int i = 1; i <= n; ++i) {
-            label[i] = l[i] = r[i] = 0;
-            adj[i].clear();
-            radj[i].clear();
-            bucket[i].clear();
-            child[i].clear();
-        }
-    }
 
     bool reachable(int u) { return label[u] > 0; }
 
