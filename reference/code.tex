@@ -1512,52 +1512,6 @@ int32_t NTT::inv_root = inverse(NTT::root, modP);
 int32_t NTT::root_pw = PolyMul::N;
 int32_t NTT::mod = modP;
 \end{lstlisting}
-\subsection{FFT}
-\begin{lstlisting}
-const double PI = 2 * acos(0);
-
-struct C {
-	double a, b;
-	C () : a(0), b(0) {}
-	C (double a, double b) : a(a), b(b) {}
-	C (double theta) : a(cos(theta)), b(sin(theta)) {}
-	C bar () const { return C(a, -b); }
-	double modsq () const { return a * a + b * b; }
-	C operator+ (const C &c) const { return C(a + c.a, b + c.b); }
-	C operator* (const C &c) const { return C(a * c.a - b * c.b, a * c.b + b * c.a); }
-	C operator/ (const C &c) const {
-		C r = (*this) * c.bar();
-		return C(r.a / c.modsq(), r.b / c.modsq());
-	}
-};
-
-// O(nlogn)
-// dir is direction of Fourier transform
-void fft (C *in, C *out, int step, int size, int dir) {
-	if (size < 1) return;
-	if (size == 1) { out[0] = in[0]; return; }
-	fft(in, out, step*2, size/2, dir);
-	fft(in + step, out + size/2, step*2, size/2, dir);
-	for (int i = 0; i < size/2; i++) {
-		C even = out[i], odd = out[i + size/2];
-		out[i] = even + C(dir * 2*PI * i / size) * odd;
-		out[i + size/2] = even + C(dir * 2*PI * (i + size/2) / size) * odd;
-	}
-}
-
-// c[i] = sum of a[j] * b[i-j]
-// n is power of 2; index is cyclic
-void convolve (int n, C *a, C *b, C *c) {
-	C *fa = new C[n];
-	C *fb = new C[n];
-	C *fc = new C[n];
-	fft(a, fa, 1, n, 1);
-	fft(b, fb, 1, n, 1);
-	for (int i = 0; i < n; i++) fc[i] = fa[i] * fb[i];
-	fft(fc, c, 1, n, -1);
-	for (int i = 0; i < n; i++) c[i] = c[i] / C(n,0);
-}
-\end{lstlisting}
 \section{Geometry}
 \begin{lstlisting}
 double EPS = 1e-8;
