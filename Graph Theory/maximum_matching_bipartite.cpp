@@ -1,20 +1,23 @@
 // Tested with https://icpcarchive.ecs.baylor.edu/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&problem=6293
 
 bool find_match(int u) {
-    if (check[u] == flag)
-        return false;
+    if (check[u] == flag) return 0;
     check[u] = flag;
-    FORU(v, 1, n)
-        if (c[u][v] && (match[v] == 0 || find_match(match[v]))) {
-            match[v] = u;
+    for (int v : rhs)
+        if (c[u][v] && (!rmatch[v] || find_match(rmatch[v]))) {
+            rmatch[v] = u;
+            lmatch[u] = v;
             return true;
         }
     return false;
 }
 
-void max_matching() {
-    FORU(i, 1, m) {
-        ++flag;
-        if (find_match(i)) ++res;
+int max_matching() {
+    int ret = 0;
+    for (int u : rhs) rmatch[u] = 0;
+    for (int u : lhs) {
+        ++flag; lmatch[u] = 0;
+        if (find_match(u)) ++ret;
     }
+    return ret;
 }

@@ -552,6 +552,50 @@ struct Graph {
 	}
 };
 \end{lstlisting}
+\subsection{Max Matching Bipartite Graph}
+\begin{lstlisting}
+bool find_match(int u) {
+    if (check[u] == flag) return 0;
+    check[u] = flag;
+    for (int v : rhs)
+        if (c[u][v] && (!rmatch[v] || find_match(rmatch[v]))) {
+            rmatch[v] = u;
+            lmatch[u] = v;
+            return true;
+        }
+    return false;
+}
+
+int max_matching() {
+    int ret = 0;
+    for (int u : rhs) rmatch[u] = 0;
+    for (int u : lhs) {
+        ++flag; lmatch[u] = 0;
+        if (find_match(u)) ++ret;
+    }
+    return ret;
+}
+\end{lstlisting}
+\subsection{Minimum Vertex Cover Bipartite Graph}
+\begin{lstlisting}
+void alternate(int u) {
+    lmvc[u] = false;
+    for (int v : rhs)
+        if (c[u][v]) {
+            rmvc[v] = true;
+            if (rmatch[v] && lmvc[rmatch[v]])
+                alternate(rmatch[v]);
+        }
+}
+
+void MVC() {
+    max_matching();
+    for (int u : rhs) rmvc[u] = false;
+    for (int u : lhs) lmvc[u] = (lmatch[u] != 0);
+    for (int u : lhs)
+        if (!lmvc[u]) alternate(u);
+}
+\end{lstlisting}
 \subsection{Tarjan}
 \begin{lstlisting}
 // avail[] initialized to be all 0
