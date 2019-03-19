@@ -471,31 +471,40 @@ void MVC() {
         if (!lmvc[u]) alternate(u);
 }
 \end{lstlisting}
-\subsection{Tarjan}
+\subsection{Cut Node / Edge}
 \begin{lstlisting}
-// avail[] initialized to be all 0
-void tarjan(int u) {
-    num[u] = low[u] = ++num_node;
-    st.push(u);
-    for (int i = 0; i < adj[u].size(); ++i) {
-        int v = adj[u][i];
-        if (!avail[v]) {
-            if (num[v] == 0) {
-                tarjan(v);
-                low[u] = min(low[u], low[v]);
-            }
-            else low[u] = min(low[u], num[v]);
-        }
-    }
-    if (low[u] == num[u]) {
-        int v = -1;
-        ++num_comp;
-        while (v != u) {
-            v = st.top(); st.pop();
-            comp[v] = num_comp;
-            avail[v] = 1;
-        }
-    }
+enum {NOT_VISITED, IN_STACK, VISITED};
+set<int> cut_node;
+set<Edge*> cut_edge;
+vector<int> status(n, 0);
+vector<int> dfn(n, 0);
+vector<int> low(n, 0);
+pair<set<int>,set<Edge*>> cut_node_edge() {
+	for (int i = 0; i < n; i ++)
+		if (status[i] == NOT_VISITED)
+			cut_node_edge(i, -1, 0);
+	return {cut_node, cut_edge};
+}
+void cut_node_edge(int node, int parent, int depth) {
+	status[node] = IN_STACK;
+	dfn[node] = low[node] = depth;
+	int child_cnt = 0;
+	for (Edge *edge = nodes[node].head; edge; edge = edge->next) {
+		int v = edge->v;
+		if (v != parent && status[v] == IN_STACK) {
+			low[node] = min(low[node], dfn[v]);
+		}
+		if (status[v] == NOT_VISITED) {
+			child_cnt ++;
+			cut_node_edge(v, node, depth+1);
+			low[node] = min(low[node], low[v]);
+			if ((parent == -1 && child_cnt > 1) || (parent != -1 && low[v] >= dfn[node])) {
+				cut_node.insert(node);
+			}
+			if (low[v] > dfn[node]) cut_edge.insert(edge);
+		}
+	}
+	status[node] = VISITED;
 }
 \end{lstlisting}
 \subsection{2-SAT}
@@ -1113,8 +1122,6 @@ void mu_gen (int n) {
 }
 \end{lstlisting}
 \subsection{Matrix}
-\subsubsection{Matrix inverse}
-\subsubsection{rref}
 \subsubsection{Gaussian Elimination}
 \begin{lstlisting}
 // Note: ax = b
@@ -1304,7 +1311,6 @@ struct Point {
 	friend Point operator- (Point p, Point q) { return Point(p.x - q.x, p.y - q.y); }
 	friend Point operator* (Point p, double k) { return Point(p.x * k, p.y * k); }
 	friend Point operator/ (Point p, double k) { return p * (1.0 / k); }
-
 	static double arg (Point p) { return atan2(p.y, p.x); }
 	static double norm (Point p) { return sqrt(p.x * p.x + p.y * p.y); }
 	static double dot (Point p, Point q) { return p.x * q.x + p.y * q.y; }
@@ -1314,7 +1320,6 @@ struct Point {
 	static Point rotate (Point p, double theta) {
 		return Point(p.x * cos(theta) - p.y * sin(theta), p.x * sin(theta) + p.y * cos(theta));
 	}
-
 	/* triangle */
 	static Point mass_center (Point p1, Point p2, Point p3) {
 		return (p1 + p2 + p3) / 3.0;
@@ -1339,7 +1344,6 @@ struct Point {
 		double c = dist(p1, p2);
 		return (p1 * a + p2 * b + p3 * c) / (a + b + c);
 	}
-
 	// divide and conquer: O(nlogn)
 	static pair<double,pair<Point,Point>> closest_pair (vector<Point> ps) {
 		int n = ps.size();
@@ -1376,7 +1380,6 @@ struct Point {
 		sort(rank.begin()+tl, rank.begin()+tr, [&ps](int i, int j) -> bool { return ps[i].x < ps[j].x; });
 		return ans;
 	}
-
 	// farthest pair in a convex hull
 	// DEBUG: maybe not good at when all points are colinear
 	static pair<double,pair<Point,Point>> farthest_pair (vector<Point> ps) {
@@ -1393,7 +1396,6 @@ struct Point {
 		}
 		return ans;
 	}
-
 	// Graham scan: O(nlogn); result in counter-clockwise
 	static vector<Point> convex_hull (vector<Point> ps) {
 		int n = ps.size();
