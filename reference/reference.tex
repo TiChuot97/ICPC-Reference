@@ -201,167 +201,81 @@ int update(int k, int l, int r, int i, int v) {
     return K;
 }
 \end{lstlisting}
-\subsection{Treap}
+\subsection{Splay Tree + Link Cut Tree}
 \begin{lstlisting}
-struct Node {
-    int v, k, size, cnt;
-    Node *l, *r;
-    Node (int v) : v(v), k(rand()), size(1), cnt(1), l(NULL), r(NULL) {}
-    void update () {
-        size = (l ? l->size : 0) + (r ? r->size : 0) + cnt;
-    }
-};
-Node *root;
-void zig (Node* &u) {
-    Node *v = u->l;
-    if (!v) return;
-    u->l = v->r; v->r = u;
-    v->size = u->size; u->update();
-    u = v;
+inline void Zig(int x) {
+    int y = fa(x), z = fa(y);
+    if (y == lc(z)) lc(z) = x;
+    else if (y == rc(z)) rc(z) = x;
+    fa(x) = z;
+    lc(y) = rc(x); fa(rc(x)) = y;
+    rc(x) = y; fa(y) = x;
+    Updata(y);
 }
-void zag (Node* &u) {
-    Node *v = u->r;
-    if (!v) return;
-    u->r = v->l; v->l = u;
-    v->size = u->size; u->update();
-    u = v;
+inline void Zag(int x) {
+    int y = fa(x), z = fa(y);
+    if (y == lc(z)) lc(z) = x;
+    else if (y == rc(z)) rc(z) = x;
+    fa(x) = z;
+    rc(y) = lc(x); fa(lc(x)) = y;
+    lc(x) = y; fa(y) = x;
+    Updata(y);
 }
-void insert (Node* &u, int v) {
-    if (!u) { u = new Node(v); return; }
-    if (v < u->v) {
-        insert(u->l, v);
-        if (u->l->k < u->k) zig(u);
-    } else if (v > u->v) {
-        insert(u->r, v);
-        if (u->r->k < u->k) zag(u);
-    } else {
-        u->cnt++;
+#define root(x) (lc(fa(x)) != x && rc(fa(x)) != x)
+inline void Splay(int x) // (int &root,int x) {
+    int y, z; 
+    Relax(x); // reverse and release marks
+    while (!root(x)) // fa(x) != fa(root)
+    {
+        y = fa(x); z = fa(y);
+        if (root(y))
+            if (x == lc(y)) Zig(x);
+            else Zag(x);
+        else if (y == lc(z))
+            if (x == lc(y)) Zig(y), Zig(x);
+            else Zag(x), Zig(x);
+        else if (x == rc(y)) Zag(y), Zag(x);
+            else Zig(x), Zag(x);
     }
-    u->update();
+    Updata(x); // root = x;
+}
+inline int Expose(int x) {
+    int y;
+    for (y = 0; x; y = x, x = fa(x))
+    {
+        Splay(x); rc(x) = y;
+        Updata(x);
+    }
+    return y;
 }
 \end{lstlisting}
-\subsection{Splay Tree}
+\subsection{K-th Number (Huafen Tree)}
 \begin{lstlisting}
-// Supports reversing a segment.
-struct SplayTree {
-    struct Node {
-        Node *left, *right, *parent;
-        int value, size;
-        bool reversed;
-    };
-    SplayTree() {
-        nilt = new Node();
-        nilt->left = nilt->right = nilt->parent = nilt;
-        nilt->value = nilt->size = 0;
-        nilt->reversed = false;
-    }
-    void set_left(Node* x, Node* y) {
-        x->left = y;
-        y->parent = x;
-    }
-    void set_right(Node* x, Node* y) {
-        x->right = y;
-        y->parent = x;
-    }
-    void set_child(Node* x, Node* y, bool is_right) {
-        if (is_right) set_right(x, y);
-        else set_left(x, y);
-    }
-    void build_tree(vector < int >& arr) {
-        root = nilt;
-        for (int i = 0; i < arr.size(); ++i) {
-            Node* x = new Node();
-            x->size = arr[i];
-            x->value = arr[i];
-            x->reversed = false;
-            set_left(x, root);
-            x->parent = x->right = nilt;
-            root = x;
-        }
-    }
-    void propagate(Node* x) {
-        if (x == nilt) return;
-        if (x->reversed) {
-            swap(x->left, x->right);
-            x->left->reversed = !x->left->reversed;
-            x->right->reversed = !x->right->reversed;
-            x->reversed = false;
-        }
-    }
-    Node* locate(Node* x, int pos) {
-        do {
-            propagate(x);
-            int num = x->left->size + 1;
-            if (num == pos) return x;
-            if (num > pos) x = x->left;
-            else
-                pos -= num, x = x->right;
-        } while (true);
-        return x;
-    }
-    void update(Node* x) {
-        x->size = x->left->size + x->right->size + 1;
-    }
-    void uptree(Node* x) {
-        Node* y = x->parent;
-        Node* z = y->parent;
-        if (x == y->right) {
-            Node* b = x->left;
-            set_right(y, b);
-            set_left(x, y);
-        }
-        else {
-            Node* b = x->right;
-            set_left(y, b);
-            set_right(x, y);
-        }
-        update(y);
-        update(x);
-        set_child(z, x, z->right == y);
-    }
-    void splay(Node* x) {
-        do {
-            Node* y = x->parent;
-            if (y == nilt) return;
-            Node* z = y->parent;
-            if (z != nilt) {
-                if ((x == y->left) == (y == z->left))
-                    uptree(y);
-                else
-                    uptree(x);
-            }
-            uptree(x);
-        } while (true);
-    }
-    void split(Node* t, int pos, Node*& t1, Node*& t2) {
-        if (pos == 0) {
-            t1 = nilt;
-            t2 = t;
-            return;
-        }
-        if (pos >= t->size) {
-            t1 = t;
-            t2 = nilt;
-            return;
-        }
-        Node* x = locate(t, pos);
-        splay(x);
-        t1 = x;
-        t2 = x->right;
-        t1->right = nilt;
-        t2->parent = nilt;
-        update(t1);
-    }
-    Node* join(Node* t1, Node* t2) {
-        if (t1 == nilt) return t2;
-        t1 = locate(t1, t1->size);
-        splay(t1); 
-        set_right(t1, t2);
-        update(t1);
-        return t1;
-    }
-    Node *root, *nilt;
-};
+// d[1][i]: value of the i-th element (unique)
+void Build(int l,int r,int h) {
+     if (l==r) return;
+     int m=l+r>>1,i,lpos=l,rpos=m+1,ss=0;
+     for (i=l;i<=r;i++)
+     {
+         if (d[h][i]<=m)
+         {
+            ss++;
+            d[h+1][lpos++]=d[h][i];
+         }
+         else d[h+1][rpos++]=d[h][i];
+         s[h][i]=ss;
+     }
+     Build(l,m,h+1);
+     Build(m+1,r,h+1);
+}
+inline int Ask(int l,int r,int h,int x,int y,int k) {
+    if (l==r) return a[sa[d[h][l]]];
+    int l1,l2,m=l+r>>1;
+    l1=(x!=l)?s[h][x-1]:0;
+    l2=s[h][y];
+    if (k<=l2-l1) return Ask(l,m,h+1,l+l1,l+l2-1,k);
+    else return Ask(m+1,r,h+1,m+1+x-l-l1,m+1-l-l2+y,k-l2+l1);
+}
 \end{lstlisting}
 \subsection{Mo's Algorithm}
 \begin{lstlisting}
@@ -623,6 +537,53 @@ int query_hld(int u, int v) {
     return ans;
 }
 \end{lstlisting}
+\subsection{KM Algorithm}
+\begin{lstlisting}
+bool dfs(int x) {
+    int y, t; visx[x] = 1;
+    for (int i = start[x]; i; i = e[i].l)
+    {
+        y = e[i].a;
+        t = lx[x] + ly[y] - e[i].v;
+        if (!t && !visy[y])
+        {
+            visy[y] = 1;
+            if (!mth[y] || dfs(mth[y]))
+            {
+                mth[y] = x;
+                return 1;
+            }
+        }
+        else slack[y] = min(slack[y], t);
+    }
+    return 0;
+}
+void work() {
+    rep(i, k)
+    {
+        lx[i] = -inf; ly[i] = 0;
+        for (int j = start[i]; j; j = e[j].l)
+            lx[i] = max(lx[i], e[j].v);
+    }
+    memset(mth, 0, sizeof(mth));
+    rep(i, k)
+    {
+        memset(visx, 0, sizeof(visx));
+        memset(visy, 0, sizeof(visy));
+        rep(j, k) slack[j] = inf;
+        while (!dfs(i))
+        {
+            int d = inf;
+            rep(j, k) if (!visy[j]) d = min(d, slack[j]);
+            rep(j, k)
+            {
+                if (visx[j]) lx[j] -= d, visx[j] = 0;
+                if (visy[j]) ly[j] += d, visy[j] = 0;
+            }
+        }
+    }
+}
+\end{lstlisting}
 \section{Dynamic Programming}
 \subsection{Convex Hull Trick}
 \begin{lstlisting}
@@ -746,6 +707,39 @@ void build_height () {
         for (int j = sa[rk[i]+1]; i+k<n && j+k<n && s[i+k] == s[j+k]; k++);
         height[rk[i]] = k;
     }
+}
+// NlogN (Ben)
+bool cmp(int s[],int a,int b,int l) {return (s[a]==s[b]&&s[a+l]==s[b+l])?1:0;}
+void Da() {
+     int i,j,l,p,m=150,ws[200005];
+     x=wa; y=wb; wa[n+1]=wb[n+1]=0;
+     memset(ws,0,sizeof(ws));
+     for (i=1;i<=n;i++) ws[x[i]=r[i]]++;
+     for (i=2;i<=m;i++) ws[i]+=ws[i-1];
+     for (i=n;i;i--) sa[ws[x[i]]--]=i;
+     for (j=1,p=0;p<n;j<<=1,m=p)
+     {
+         for (i=n-j+1,p=0;i<=n;i++) y[++p]=i;
+         for (i=1;i<=n;i++) if (sa[i]>j) y[++p]=sa[i]-j;
+         for (i=1;i<=m;i++) ws[i]=0;
+         for (i=1;i<=n;i++) ws[x[i]]++;
+         for (i=2;i<=m;i++) ws[i]+=ws[i-1];
+         for (i=n;i;i--) sa[ws[x[y[i]]]--]=y[i];
+         for (t=x,x=y,y=t,p=1,x[sa[1]]=1,i=2;i<=n;i++)
+             x[sa[i]]=cmp(y,sa[i],sa[i-1],j)?p:++p;
+    }
+}// X is rank; sa is suffix arrary (index of i-th smallest)
+void Get_height() {
+     int h,i,j;
+     h=0;
+     for (i=1;i<=n;i++)
+     {
+         h?h--:0;
+         if (rank[i]==1) continue;
+         j=sa[rank[i]-1];
+         while (a[i+h]==a[j+h]) h++;
+         height[rank[i]]=h;
+     }
 }
 \end{lstlisting}
 \subsection{Aho-Corasick Automata}
@@ -1678,45 +1672,12 @@ long long count_gridpoints (long long n, long long a, long long b, long long m) 
 \end{lstlisting}
 \subsection{Simpson's Union Of Circles}
 \begin{lstlisting}
-struct dot {
-    double x, y;
-    double dis(dot &o) { return sqrt(sqr(x - o.x) + sqr(y - o.y)); }
-};
 int lx = 1000, rx = -1000;
-struct circle {
-    dot o; int r;
-    void init() {
-        int x, y;
-        scanf("%d%d%d", &x, &y, &r);
-        lx = min(lx, x - r); rx = max(rx, x + r);
-        o.x = x; o.y = y;
-    }
-    bool in(circle &b) { return (b.r - r - o.dis(b.o) >= -eps); }
-    bool operator==(const circle &b) {
-        return r == b.r && fabs(o.x - b.o.x) <= eps && fabs(o.y - b.o.y) <= eps;
-    }
-}tmp[Maxn], c[Maxn];
+struct circle {...}tmp[Maxn], c[Maxn];
 struct seg {
     double v; int s;
     bool operator<(const seg &o) const {return v < o.v - eps;}
 }l[Maxn * 2];
-int n, m;
-void Init() {
-    scanf("%d", &m);
-    for (int i = 1; i <= m; ++i) {
-        tmp[++n].init();
-        for (int j = 1; j <= n - 1; ++j)
-            if (tmp[j] == tmp[n])
-                {--n; break;}
-    }
-    m = n; n = 0;
-    for (int i = 1; i <= m; ++i) {
-        bool f = 0;
-        for (int j = 1; j <= m; ++j) if (j != i)
-            if (tmp[i].in(tmp[j])) { f = 1; break; }
-        if (!f) c[++n] = tmp[i];
-    }
-}
 inline double get(double x) {
     int t = 0, now = 0;
     double d, last, s = 0;
